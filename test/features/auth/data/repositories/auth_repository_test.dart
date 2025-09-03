@@ -4,7 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:salsa_challenge/features/auth/auth.dart';
 
-import 'auth_repository.mocks.dart';
+import 'auth_repository_test.mocks.dart';
 
 @GenerateMocks([AuthRemoteDataSource, UserRepository, CredentialsRepository])
 void main() {
