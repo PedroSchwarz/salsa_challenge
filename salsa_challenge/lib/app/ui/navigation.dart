@@ -53,7 +53,27 @@ GoRouter createRouter({required AuthRepository authRepository}) {
               },
             ),
       ),
-      GoRoute(path: '/${HomeScreen.routeName}', name: HomeScreen.routeName, builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/${HomeScreen.routeName}',
+        name: HomeScreen.routeName,
+        builder:
+            (context, state) => HomeScreen(
+              onLocationSelected: (location) {
+                context.goNamed(LocationDetailsScreen.routeName, pathParameters: {'id': location.id.toString()});
+              },
+            ),
+        routes: [
+          GoRoute(
+            path: '/${LocationDetailsScreen.routeName}/:id',
+            name: LocationDetailsScreen.routeName,
+            builder: (context, state) {
+              final id = state.pathParameters['id'] ?? '';
+
+              return LocationDetailsScreen(id: int.tryParse(id) ?? 0);
+            },
+          ),
+        ],
+      ),
     ],
   );
   return router;
