@@ -8,3 +8,5 @@ export 'data/models/user_data.dart';
 export 'data/repositories/auth_repository.dart';
 export 'data/repositories/credentials_repository.dart';
 export 'data/repositories/user_repository.dart';
+export 'ui/stores/login_store.dart';
+export 'ui/views/login_screen.dart';
