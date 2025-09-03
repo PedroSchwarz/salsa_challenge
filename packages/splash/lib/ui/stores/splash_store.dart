@@ -13,12 +13,12 @@ abstract class _SplashStore with Store {
   final SplashRepository splashRepository;
 
   @readonly
-  bool _isAuthenticated = false;
+  bool? _isAuthenticated;
 
   @action
   Future<void> load() async {
     await splashRepository.init();
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     if (splashRepository.authRepository.currentUser.value != null) {
       _isAuthenticated = true;

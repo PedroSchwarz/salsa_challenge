@@ -33,8 +33,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     super.initState();
     store.load();
 
-    _authenticationDisposer = reaction<bool>((_) => store.isAuthenticated, (isAuthenticated) {
-      if (isAuthenticated) {
+    _authenticationDisposer = reaction<bool?>((_) => store.isAuthenticated, (isAuthenticated) {
+      final value = isAuthenticated;
+      if (value == null) return;
+
+      if (value) {
         widget.onAuthenticated();
       } else {
         widget.onUnauthenticated();
