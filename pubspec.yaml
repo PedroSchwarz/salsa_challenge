@@ -13,3 +13,4 @@ workspace:
   - packages/database
   - packages/design_system
   - packages/home
+  - packages/splash

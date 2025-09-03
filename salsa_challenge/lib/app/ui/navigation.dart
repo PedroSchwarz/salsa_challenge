@@ -4,16 +4,17 @@ import 'package:auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home/home.dart';
+import 'package:splash/splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 GoRouter createRouter({required AuthRepository authRepository}) {
   /// The routes that are white listed and don't require authentication.
-  final List<String> authWhiteList = [LoginScreen.routeName];
+  final List<String> authWhiteList = [SplashScreen.routeName, LoginScreen.routeName];
 
   final router = GoRouter(
     navigatorKey: navigatorKey,
-    initialLocation: '/${LoginScreen.routeName}',
+    initialLocation: '/${SplashScreen.routeName}',
     refreshListenable: GoRouterRefreshStreamListenable(authRepository.currentUser.distinct()),
     redirect: (context, state) {
       /// If the route is in the auth white list, return null.
@@ -29,6 +30,19 @@ GoRouter createRouter({required AuthRepository authRepository}) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/${SplashScreen.routeName}',
+        name: SplashScreen.routeName,
+        builder:
+            (context, state) => SplashScreen(
+              onAuthenticated: () {
+                context.goNamed(HomeScreen.routeName);
+              },
+              onUnauthenticated: () {
+                context.goNamed(LoginScreen.routeName);
+              },
+            ),
+      ),
       GoRoute(
         path: '/${LoginScreen.routeName}',
         name: LoginScreen.routeName,
