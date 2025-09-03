@@ -12,6 +12,11 @@ class AppTheme {
     brightness: Brightness.light,
     colorScheme: ColorScheme.fromSeed(seedColor: primaryPurple, brightness: Brightness.light),
     scaffoldBackgroundColor: lightBackgroundColor,
+    appBarTheme: const AppBarTheme(
+      centerTitle: false,
+      titleTextStyle: TextStyle(fontSize: 32, color: primaryPurple),
+      backgroundColor: lightBackgroundColor,
+    ),
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -19,5 +24,10 @@ class AppTheme {
     brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(seedColor: primaryPurpleLight, brightness: Brightness.dark),
     scaffoldBackgroundColor: darkBackgroundColor,
+    appBarTheme: const AppBarTheme(
+      centerTitle: false,
+      titleTextStyle: TextStyle(fontSize: 32, color: primaryPurpleLight),
+      backgroundColor: darkBackgroundColor,
+    ),
   );
 }

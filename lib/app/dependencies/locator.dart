@@ -40,16 +40,19 @@ class MainLocator extends BaseServiceLocator {
 
     getIt.registerSingleton(appStorage);
     getIt.registerSingleton<BuildConfiguration>(buildConfiguration);
-    getIt.registerSingleton<GoRouter>(createRouter());
     getIt.registerSingleton<AppDatabase>(AppDatabase());
 
     getIt.registerSingleton<AuthRemoteDataSource>(AuthRemoteDataSourceImpl());
     getIt.registerSingleton<UserLocalDataSource>(UserLocalDataSource(localStorage: getIt()));
     getIt.registerSingleton<CredentialsLocalDataSource>(CredentialsLocalDataSource(localStorage: getIt()));
 
-    getIt.registerSingleton<AuthRepository>(AuthRepository(authRemoteDataSource: getIt(), userRepository: getIt(), credentialsRepository: getIt()));
     getIt.registerSingleton<UserRepository>(UserRepository(userLocalDataSource: getIt()));
     getIt.registerSingleton<CredentialsRepository>(CredentialsRepository(credentialsLocalDataSource: getIt()));
+    getIt.registerSingleton<AuthRepository>(AuthRepository(authRemoteDataSource: getIt(), userRepository: getIt(), credentialsRepository: getIt()));
+
+    getIt.registerSingleton<GoRouter>(createRouter(authRepository: getIt()));
+
+    getIt.registerSingleton<LoginStore>(LoginStore(authRepository: getIt()));
 
     getIt.registerSingleton<LocationManager>(getIt<AppDatabase>().managers.locationTable);
     getIt.registerSingleton<LocationsLocalDataSource>(LocationsLocalDataSourceImpl(manager: getIt()));
