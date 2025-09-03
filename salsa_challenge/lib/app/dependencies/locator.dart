@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:home/home.dart';
 import 'package:salsa_challenge/app/ui/navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:splash/splash.dart';
 
 class MainLocator extends BaseServiceLocator {
   @override
@@ -38,6 +39,9 @@ class MainLocator extends BaseServiceLocator {
     getIt.registerSingleton<AuthRepository>(AuthRepository(authRemoteDataSource: getIt(), userRepository: getIt(), credentialsRepository: getIt()));
 
     getIt.registerSingleton<GoRouter>(createRouter(authRepository: getIt()));
+
+    getIt.registerSingleton<SplashRepository>(SplashRepository(authRepository: getIt()));
+    getIt.registerSingleton<SplashStore>(SplashStore(splashRepository: getIt()));
 
     getIt.registerSingleton<LoginStore>(LoginStore(authRepository: getIt()));
 

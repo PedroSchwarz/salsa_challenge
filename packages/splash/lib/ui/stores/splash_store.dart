@@ -1,0 +1,29 @@
+import 'package:flutter/foundation.dart';
+import 'package:mobx/mobx.dart';
+import 'package:splash/data/repository/splash_repository.dart';
+
+part 'splash_store.g.dart';
+
+class SplashStore = _SplashStore with _$SplashStore;
+
+abstract class _SplashStore with Store {
+  _SplashStore({required this.splashRepository});
+
+  @visibleForTesting
+  final SplashRepository splashRepository;
+
+  @readonly
+  bool _isAuthenticated = false;
+
+  @action
+  Future<void> load() async {
+    await splashRepository.init();
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (splashRepository.authRepository.currentUser.value != null) {
+      _isAuthenticated = true;
+    } else {
+      _isAuthenticated = false;
+    }
+  }
+}
