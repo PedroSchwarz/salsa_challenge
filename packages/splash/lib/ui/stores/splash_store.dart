@@ -4,6 +4,7 @@ import 'package:splash/data/repository/splash_repository.dart';
 
 part 'splash_store.g.dart';
 
+// ignore: library_private_types_in_public_api
 class SplashStore = _SplashStore with _$SplashStore;
 
 abstract class _SplashStore with Store {

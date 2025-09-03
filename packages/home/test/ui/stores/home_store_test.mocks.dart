@@ -88,16 +88,6 @@ class MockHomeRepository extends _i1.Mock implements _i4.HomeRepository {
           as _i5.Future<_i3.LocationData>);
 
   @override
-  _i5.Future<List<_i3.LocationData>> getFavoritesLocations() =>
-      (super.noSuchMethod(
-            Invocation.method(#getFavoritesLocations, []),
-            returnValue: _i5.Future<List<_i3.LocationData>>.value(
-              <_i3.LocationData>[],
-            ),
-          )
-          as _i5.Future<List<_i3.LocationData>>);
-
-  @override
   _i5.Future<void> updateLocation({
     required int? id,
     required bool? isFavorite,

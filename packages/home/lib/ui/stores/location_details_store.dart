@@ -6,6 +6,7 @@ import 'package:mobx/mobx.dart';
 
 part 'location_details_store.g.dart';
 
+// ignore: library_private_types_in_public_api
 class LocationDetailsStore = _LocationDetailsStore with _$LocationDetailsStore;
 
 abstract class _LocationDetailsStore with Store {
