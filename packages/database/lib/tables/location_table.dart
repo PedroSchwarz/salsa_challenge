@@ -4,7 +4,8 @@ import '../configuration/base_table.dart';
 
 class LocationTable extends Table with BaseTableMixin {
   TextColumn get name => text()();
-  TextColumn get description => text().nullable()();
+  TextColumn get description => text()();
+  TextColumn get imageUrl => text()();
   TextColumn get address => text()();
   TextColumn get city => text()();
   TextColumn get state => text()();
@@ -12,4 +13,5 @@ class LocationTable extends Table with BaseTableMixin {
   TextColumn get country => text()();
   RealColumn get latitude => real()();
   RealColumn get longitude => real()();
+  BoolColumn get isFavorite => boolean().clientDefault(() => false)();
 }

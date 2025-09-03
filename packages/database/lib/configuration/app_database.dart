@@ -4,6 +4,8 @@ import 'package:database/tables/location_table.dart';
 
 part 'app_database.g.dart';
 
+typedef LocationManager = $$LocationTableTableTableManager;
+
 @DriftDatabase(tables: [LocationTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());

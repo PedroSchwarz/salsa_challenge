@@ -50,9 +50,20 @@ class $LocationTableTable extends LocationTable
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _imageUrlMeta = const VerificationMeta(
+    'imageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> imageUrl = GeneratedColumn<String>(
+    'image_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _addressMeta = const VerificationMeta(
     'address',
@@ -125,12 +136,28 @@ class $LocationTableTable extends LocationTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _isFavoriteMeta = const VerificationMeta(
+    'isFavorite',
+  );
+  @override
+  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
+    'is_favorite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_favorite" IN (0, 1))',
+    ),
+    clientDefault: () => false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     createdAt,
     name,
     description,
+    imageUrl,
     address,
     city,
     state,
@@ -138,6 +165,7 @@ class $LocationTableTable extends LocationTable
     country,
     latitude,
     longitude,
+    isFavorite,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -176,6 +204,16 @@ class $LocationTableTable extends LocationTable
           _descriptionMeta,
         ),
       );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('image_url')) {
+      context.handle(
+        _imageUrlMeta,
+        imageUrl.isAcceptableOrUnknown(data['image_url']!, _imageUrlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_imageUrlMeta);
     }
     if (data.containsKey('address')) {
       context.handle(
@@ -233,6 +271,12 @@ class $LocationTableTable extends LocationTable
     } else if (isInserting) {
       context.missing(_longitudeMeta);
     }
+    if (data.containsKey('is_favorite')) {
+      context.handle(
+        _isFavoriteMeta,
+        isFavorite.isAcceptableOrUnknown(data['is_favorite']!, _isFavoriteMeta),
+      );
+    }
     return context;
   }
 
@@ -257,10 +301,16 @@ class $LocationTableTable extends LocationTable
             DriftSqlType.string,
             data['${effectivePrefix}name'],
           )!,
-      description: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description'],
-      ),
+      description:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}description'],
+          )!,
+      imageUrl:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}image_url'],
+          )!,
       address:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -296,6 +346,11 @@ class $LocationTableTable extends LocationTable
             DriftSqlType.double,
             data['${effectivePrefix}longitude'],
           )!,
+      isFavorite:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_favorite'],
+          )!,
     );
   }
 
@@ -310,7 +365,8 @@ class LocationTableData extends DataClass
   final int id;
   final DateTime createdAt;
   final String name;
-  final String? description;
+  final String description;
+  final String imageUrl;
   final String address;
   final String city;
   final String state;
@@ -318,11 +374,13 @@ class LocationTableData extends DataClass
   final String country;
   final double latitude;
   final double longitude;
+  final bool isFavorite;
   const LocationTableData({
     required this.id,
     required this.createdAt,
     required this.name,
-    this.description,
+    required this.description,
+    required this.imageUrl,
     required this.address,
     required this.city,
     required this.state,
@@ -330,6 +388,7 @@ class LocationTableData extends DataClass
     required this.country,
     required this.latitude,
     required this.longitude,
+    required this.isFavorite,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -337,9 +396,8 @@ class LocationTableData extends DataClass
     map['id'] = Variable<int>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['name'] = Variable<String>(name);
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
-    }
+    map['description'] = Variable<String>(description);
+    map['image_url'] = Variable<String>(imageUrl);
     map['address'] = Variable<String>(address);
     map['city'] = Variable<String>(city);
     map['state'] = Variable<String>(state);
@@ -347,6 +405,7 @@ class LocationTableData extends DataClass
     map['country'] = Variable<String>(country);
     map['latitude'] = Variable<double>(latitude);
     map['longitude'] = Variable<double>(longitude);
+    map['is_favorite'] = Variable<bool>(isFavorite);
     return map;
   }
 
@@ -355,10 +414,8 @@ class LocationTableData extends DataClass
       id: Value(id),
       createdAt: Value(createdAt),
       name: Value(name),
-      description:
-          description == null && nullToAbsent
-              ? const Value.absent()
-              : Value(description),
+      description: Value(description),
+      imageUrl: Value(imageUrl),
       address: Value(address),
       city: Value(city),
       state: Value(state),
@@ -366,6 +423,7 @@ class LocationTableData extends DataClass
       country: Value(country),
       latitude: Value(latitude),
       longitude: Value(longitude),
+      isFavorite: Value(isFavorite),
     );
   }
 
@@ -378,7 +436,8 @@ class LocationTableData extends DataClass
       id: serializer.fromJson<int>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String?>(json['description']),
+      description: serializer.fromJson<String>(json['description']),
+      imageUrl: serializer.fromJson<String>(json['imageUrl']),
       address: serializer.fromJson<String>(json['address']),
       city: serializer.fromJson<String>(json['city']),
       state: serializer.fromJson<String>(json['state']),
@@ -386,6 +445,7 @@ class LocationTableData extends DataClass
       country: serializer.fromJson<String>(json['country']),
       latitude: serializer.fromJson<double>(json['latitude']),
       longitude: serializer.fromJson<double>(json['longitude']),
+      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
     );
   }
   @override
@@ -395,7 +455,8 @@ class LocationTableData extends DataClass
       'id': serializer.toJson<int>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String?>(description),
+      'description': serializer.toJson<String>(description),
+      'imageUrl': serializer.toJson<String>(imageUrl),
       'address': serializer.toJson<String>(address),
       'city': serializer.toJson<String>(city),
       'state': serializer.toJson<String>(state),
@@ -403,6 +464,7 @@ class LocationTableData extends DataClass
       'country': serializer.toJson<String>(country),
       'latitude': serializer.toJson<double>(latitude),
       'longitude': serializer.toJson<double>(longitude),
+      'isFavorite': serializer.toJson<bool>(isFavorite),
     };
   }
 
@@ -410,7 +472,8 @@ class LocationTableData extends DataClass
     int? id,
     DateTime? createdAt,
     String? name,
-    Value<String?> description = const Value.absent(),
+    String? description,
+    String? imageUrl,
     String? address,
     String? city,
     String? state,
@@ -418,11 +481,13 @@ class LocationTableData extends DataClass
     String? country,
     double? latitude,
     double? longitude,
+    bool? isFavorite,
   }) => LocationTableData(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     name: name ?? this.name,
-    description: description.present ? description.value : this.description,
+    description: description ?? this.description,
+    imageUrl: imageUrl ?? this.imageUrl,
     address: address ?? this.address,
     city: city ?? this.city,
     state: state ?? this.state,
@@ -430,6 +495,7 @@ class LocationTableData extends DataClass
     country: country ?? this.country,
     latitude: latitude ?? this.latitude,
     longitude: longitude ?? this.longitude,
+    isFavorite: isFavorite ?? this.isFavorite,
   );
   LocationTableData copyWithCompanion(LocationTableCompanion data) {
     return LocationTableData(
@@ -438,6 +504,7 @@ class LocationTableData extends DataClass
       name: data.name.present ? data.name.value : this.name,
       description:
           data.description.present ? data.description.value : this.description,
+      imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
       address: data.address.present ? data.address.value : this.address,
       city: data.city.present ? data.city.value : this.city,
       state: data.state.present ? data.state.value : this.state,
@@ -445,6 +512,8 @@ class LocationTableData extends DataClass
       country: data.country.present ? data.country.value : this.country,
       latitude: data.latitude.present ? data.latitude.value : this.latitude,
       longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      isFavorite:
+          data.isFavorite.present ? data.isFavorite.value : this.isFavorite,
     );
   }
 
@@ -455,13 +524,15 @@ class LocationTableData extends DataClass
           ..write('createdAt: $createdAt, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
+          ..write('imageUrl: $imageUrl, ')
           ..write('address: $address, ')
           ..write('city: $city, ')
           ..write('state: $state, ')
           ..write('zip: $zip, ')
           ..write('country: $country, ')
           ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude')
+          ..write('longitude: $longitude, ')
+          ..write('isFavorite: $isFavorite')
           ..write(')'))
         .toString();
   }
@@ -472,6 +543,7 @@ class LocationTableData extends DataClass
     createdAt,
     name,
     description,
+    imageUrl,
     address,
     city,
     state,
@@ -479,6 +551,7 @@ class LocationTableData extends DataClass
     country,
     latitude,
     longitude,
+    isFavorite,
   );
   @override
   bool operator ==(Object other) =>
@@ -488,20 +561,23 @@ class LocationTableData extends DataClass
           other.createdAt == this.createdAt &&
           other.name == this.name &&
           other.description == this.description &&
+          other.imageUrl == this.imageUrl &&
           other.address == this.address &&
           other.city == this.city &&
           other.state == this.state &&
           other.zip == this.zip &&
           other.country == this.country &&
           other.latitude == this.latitude &&
-          other.longitude == this.longitude);
+          other.longitude == this.longitude &&
+          other.isFavorite == this.isFavorite);
 }
 
 class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
   final Value<int> id;
   final Value<DateTime> createdAt;
   final Value<String> name;
-  final Value<String?> description;
+  final Value<String> description;
+  final Value<String> imageUrl;
   final Value<String> address;
   final Value<String> city;
   final Value<String> state;
@@ -509,11 +585,13 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
   final Value<String> country;
   final Value<double> latitude;
   final Value<double> longitude;
+  final Value<bool> isFavorite;
   const LocationTableCompanion({
     this.id = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
+    this.imageUrl = const Value.absent(),
     this.address = const Value.absent(),
     this.city = const Value.absent(),
     this.state = const Value.absent(),
@@ -521,12 +599,14 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
     this.country = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
+    this.isFavorite = const Value.absent(),
   });
   LocationTableCompanion.insert({
     this.id = const Value.absent(),
     this.createdAt = const Value.absent(),
     required String name,
-    this.description = const Value.absent(),
+    required String description,
+    required String imageUrl,
     required String address,
     required String city,
     required String state,
@@ -534,7 +614,10 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
     required String country,
     required double latitude,
     required double longitude,
+    this.isFavorite = const Value.absent(),
   }) : name = Value(name),
+       description = Value(description),
+       imageUrl = Value(imageUrl),
        address = Value(address),
        city = Value(city),
        state = Value(state),
@@ -547,6 +630,7 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
     Expression<DateTime>? createdAt,
     Expression<String>? name,
     Expression<String>? description,
+    Expression<String>? imageUrl,
     Expression<String>? address,
     Expression<String>? city,
     Expression<String>? state,
@@ -554,12 +638,14 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
     Expression<String>? country,
     Expression<double>? latitude,
     Expression<double>? longitude,
+    Expression<bool>? isFavorite,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (createdAt != null) 'created_at': createdAt,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (imageUrl != null) 'image_url': imageUrl,
       if (address != null) 'address': address,
       if (city != null) 'city': city,
       if (state != null) 'state': state,
@@ -567,6 +653,7 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
       if (country != null) 'country': country,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
+      if (isFavorite != null) 'is_favorite': isFavorite,
     });
   }
 
@@ -574,7 +661,8 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
     Value<int>? id,
     Value<DateTime>? createdAt,
     Value<String>? name,
-    Value<String?>? description,
+    Value<String>? description,
+    Value<String>? imageUrl,
     Value<String>? address,
     Value<String>? city,
     Value<String>? state,
@@ -582,12 +670,14 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
     Value<String>? country,
     Value<double>? latitude,
     Value<double>? longitude,
+    Value<bool>? isFavorite,
   }) {
     return LocationTableCompanion(
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
       name: name ?? this.name,
       description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
       address: address ?? this.address,
       city: city ?? this.city,
       state: state ?? this.state,
@@ -595,6 +685,7 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
       country: country ?? this.country,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -612,6 +703,9 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
+    }
+    if (imageUrl.present) {
+      map['image_url'] = Variable<String>(imageUrl.value);
     }
     if (address.present) {
       map['address'] = Variable<String>(address.value);
@@ -634,6 +728,9 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
     if (longitude.present) {
       map['longitude'] = Variable<double>(longitude.value);
     }
+    if (isFavorite.present) {
+      map['is_favorite'] = Variable<bool>(isFavorite.value);
+    }
     return map;
   }
 
@@ -644,13 +741,15 @@ class LocationTableCompanion extends UpdateCompanion<LocationTableData> {
           ..write('createdAt: $createdAt, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
+          ..write('imageUrl: $imageUrl, ')
           ..write('address: $address, ')
           ..write('city: $city, ')
           ..write('state: $state, ')
           ..write('zip: $zip, ')
           ..write('country: $country, ')
           ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude')
+          ..write('longitude: $longitude, ')
+          ..write('isFavorite: $isFavorite')
           ..write(')'))
         .toString();
   }
@@ -672,7 +771,8 @@ typedef $$LocationTableTableCreateCompanionBuilder =
       Value<int> id,
       Value<DateTime> createdAt,
       required String name,
-      Value<String?> description,
+      required String description,
+      required String imageUrl,
       required String address,
       required String city,
       required String state,
@@ -680,13 +780,15 @@ typedef $$LocationTableTableCreateCompanionBuilder =
       required String country,
       required double latitude,
       required double longitude,
+      Value<bool> isFavorite,
     });
 typedef $$LocationTableTableUpdateCompanionBuilder =
     LocationTableCompanion Function({
       Value<int> id,
       Value<DateTime> createdAt,
       Value<String> name,
-      Value<String?> description,
+      Value<String> description,
+      Value<String> imageUrl,
       Value<String> address,
       Value<String> city,
       Value<String> state,
@@ -694,6 +796,7 @@ typedef $$LocationTableTableUpdateCompanionBuilder =
       Value<String> country,
       Value<double> latitude,
       Value<double> longitude,
+      Value<bool> isFavorite,
     });
 
 class $$LocationTableTableFilterComposer
@@ -722,6 +825,11 @@ class $$LocationTableTableFilterComposer
 
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -759,6 +867,11 @@ class $$LocationTableTableFilterComposer
     column: $table.longitude,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$LocationTableTableOrderingComposer
@@ -787,6 +900,11 @@ class $$LocationTableTableOrderingComposer
 
   ColumnOrderings<String> get description => $composableBuilder(
     column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -824,6 +942,11 @@ class $$LocationTableTableOrderingComposer
     column: $table.longitude,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$LocationTableTableAnnotationComposer
@@ -849,6 +972,9 @@ class $$LocationTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get imageUrl =>
+      $composableBuilder(column: $table.imageUrl, builder: (column) => column);
+
   GeneratedColumn<String> get address =>
       $composableBuilder(column: $table.address, builder: (column) => column);
 
@@ -869,6 +995,11 @@ class $$LocationTableTableAnnotationComposer
 
   GeneratedColumn<double> get longitude =>
       $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => column,
+  );
 }
 
 class $$LocationTableTableTableManager
@@ -913,7 +1044,8 @@ class $$LocationTableTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String?> description = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> imageUrl = const Value.absent(),
                 Value<String> address = const Value.absent(),
                 Value<String> city = const Value.absent(),
                 Value<String> state = const Value.absent(),
@@ -921,11 +1053,13 @@ class $$LocationTableTableTableManager
                 Value<String> country = const Value.absent(),
                 Value<double> latitude = const Value.absent(),
                 Value<double> longitude = const Value.absent(),
+                Value<bool> isFavorite = const Value.absent(),
               }) => LocationTableCompanion(
                 id: id,
                 createdAt: createdAt,
                 name: name,
                 description: description,
+                imageUrl: imageUrl,
                 address: address,
                 city: city,
                 state: state,
@@ -933,13 +1067,15 @@ class $$LocationTableTableTableManager
                 country: country,
                 latitude: latitude,
                 longitude: longitude,
+                isFavorite: isFavorite,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 required String name,
-                Value<String?> description = const Value.absent(),
+                required String description,
+                required String imageUrl,
                 required String address,
                 required String city,
                 required String state,
@@ -947,11 +1083,13 @@ class $$LocationTableTableTableManager
                 required String country,
                 required double latitude,
                 required double longitude,
+                Value<bool> isFavorite = const Value.absent(),
               }) => LocationTableCompanion.insert(
                 id: id,
                 createdAt: createdAt,
                 name: name,
                 description: description,
+                imageUrl: imageUrl,
                 address: address,
                 city: city,
                 state: state,
@@ -959,6 +1097,7 @@ class $$LocationTableTableTableManager
                 country: country,
                 latitude: latitude,
                 longitude: longitude,
+                isFavorite: isFavorite,
               ),
           withReferenceMapper:
               (p0) =>
