@@ -1,0 +1,34 @@
+name: salsa_challenge
+description: Challenge project for Salsa Tech.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.7.2
+
+resolution: workspace
+
+dependencies:
+  auth:
+    path: ../packages/auth
+  core:
+    path: ../packages/core
+  database:
+    path: ../packages/database
+  design_system:
+    path: ../packages/design_system
+  flutter:
+    sdk: flutter
+  flutter_secure_storage: ^9.2.4
+  go_router: ^16.2.0
+  home:
+    path: ../packages/home
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

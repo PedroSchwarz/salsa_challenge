@@ -1,0 +1,23 @@
+name: database
+description: "A new Flutter package project."
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.7.2
+  flutter: ">=1.17.0"
+
+resolution: workspace
+
+dependencies:
+  drift: ^2.28.1
+  drift_flutter: ^0.2.5
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  build_runner: 
+  drift_dev: ^2.28.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
