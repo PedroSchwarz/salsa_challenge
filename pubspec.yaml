@@ -23,6 +23,7 @@ dependencies:
   logging: ^1.2.0
   mobx: ^2.5.0
   path_provider: ^2.1.5
+  rxdart: ^0.28.0
   shared_preferences: ^2.5.3
 
 dev_dependencies:
