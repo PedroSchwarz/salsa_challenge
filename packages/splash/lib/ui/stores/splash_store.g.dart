@@ -14,16 +14,16 @@ mixin _$SplashStore on _SplashStore, Store {
     context: context,
   );
 
-  bool get isAuthenticated {
+  bool? get isAuthenticated {
     _$_isAuthenticatedAtom.reportRead();
     return super._isAuthenticated;
   }
 
   @override
-  bool get _isAuthenticated => isAuthenticated;
+  bool? get _isAuthenticated => isAuthenticated;
 
   @override
-  set _isAuthenticated(bool value) {
+  set _isAuthenticated(bool? value) {
     _$_isAuthenticatedAtom.reportWrite(value, super._isAuthenticated, () {
       super._isAuthenticated = value;
     });

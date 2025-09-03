@@ -45,6 +45,10 @@ class MainLocator extends BaseServiceLocator {
 
     getIt.registerSingleton<LoginStore>(LoginStore(authRepository: getIt()));
 
-    getIt.registerSingleton<HomeStore>(HomeStore());
+    getIt.registerSingleton<LocationManager>(getIt<AppDatabase>().managers.locationTable);
+    getIt.registerSingleton<HomeLocalDataSource>(HomeLocalDataSourceImpl(locationManager: getIt()));
+    getIt.registerSingleton<HomeRepository>(HomeRepository(homeLocalDataSource: getIt()));
+    getIt.registerSingleton<HomeStore>(HomeStore(homeRepository: getIt()));
+    getIt.registerSingleton<LocationDetailsStore>(LocationDetailsStore(homeRepository: getIt()));
   }
 }

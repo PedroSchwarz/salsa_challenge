@@ -4,6 +4,7 @@ import 'package:splash/data/repository/splash_repository.dart';
 
 part 'splash_store.g.dart';
 
+// ignore: library_private_types_in_public_api
 class SplashStore = _SplashStore with _$SplashStore;
 
 abstract class _SplashStore with Store {
@@ -13,12 +14,12 @@ abstract class _SplashStore with Store {
   final SplashRepository splashRepository;
 
   @readonly
-  bool _isAuthenticated = false;
+  bool? _isAuthenticated;
 
   @action
   Future<void> load() async {
     await splashRepository.init();
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     if (splashRepository.authRepository.currentUser.value != null) {
       _isAuthenticated = true;

@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:gap/gap.dart';
 import 'package:home/home.dart';
+import 'package:home/ui/views/components/home_content_filters.dart';
+import 'package:home/ui/views/components/home_empty_content.dart';
+import 'package:home/ui/views/components/home_loading_content.dart';
+import 'package:home/ui/views/components/location_item.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({required this.onLocationSelected, super.key});
+
+  final Function(LocationData) onLocationSelected;
 
   static const routeName = 'home';
 
@@ -16,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final store = getIt<HomeStore>();
+  final scrollController = ScrollController();
 
   @override
   void initState() {
@@ -25,19 +32,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToTop() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Screen'),
+        title: const Text('Dashboard'),
         bottom: PreferredSize(
           preferredSize: const Size(double.infinity, AppSpacing.xs),
           child: Observer(
             builder: (context) {
-              if (store.isLoading) {
+              if (store.isLoading || store.isRefreshing) {
                 return const LinearProgressIndicator();
               }
               return const SizedBox.shrink();
@@ -47,39 +61,67 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Observer(
         builder: (context) {
-          if (store.isLoading) {
-            return ListView.separated(
-              itemCount: 5,
-              padding: const EdgeInsets.all(AppSpacing.md),
-              itemBuilder: (context, index) {
-                return const AppSkeleton(isLoading: true, child: SizedBox(height: 100, width: double.infinity));
-              },
-              separatorBuilder: (context, index) {
-                return const Gap(AppSpacing.md);
-              },
-            );
-          }
+          final hasItems = store.showFavoritesOnly ? store.hasFavoriteItems : store.hasItems;
 
-          if (!store.hasItems) {
-            return const Center(child: Text('No items'));
-          }
-
-          return ListView.builder(
-            itemCount: store.itemCount,
-            itemBuilder: (context, index) {
-              final item = store.items[index];
-              return Text(item.toString());
-            },
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Observer(
+                  builder: (context) {
+                    return HomeContentFilters(
+                      showFavoritesOnly: store.showFavoritesOnly,
+                      onFilterChanged: (selected) {
+                        _scrollToTop();
+                        store.toggleShowFavoritesOnly();
+                      },
+                    );
+                  },
+                ),
+              ),
+              if (store.isLoading)
+                Expanded(child: HomeLoadingContent())
+              else if (!hasItems)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: HomeEmptyContent(showFavoritesOnly: store.showFavoritesOnly, onRefresh: store.refresh),
+                  ),
+                )
+              else
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: store.refresh,
+                    child: ListView.separated(
+                      controller: scrollController,
+                      padding: const EdgeInsets.only(top: AppSpacing.sm, left: AppSpacing.sm, right: AppSpacing.sm, bottom: AppSpacing.xxxl),
+                      itemCount: store.filteredItemCount,
+                      itemBuilder: (context, index) {
+                        return LocationItem(
+                          item: store.filteredItems[index],
+                          onLocationSelected: widget.onLocationSelected,
+                          actionIcon: Observer(
+                            builder: (context) {
+                              final item = store.filteredItems[index];
+                              return IconButton.filledTonal(
+                                onPressed: () {
+                                  store.toggleFavorite(id: item.id, isFavorite: !item.isFavorite);
+                                },
+                                icon: store.filteredItems[index].isFavorite ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const Gap(AppSpacing.md);
+                      },
+                    ),
+                  ),
+                ),
+            ],
           );
         },
-      ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          IconButton.filledTonal(onPressed: store.load, icon: const Icon(Icons.add), iconSize: 32),
-          const Gap(AppSpacing.md),
-          IconButton.filled(onPressed: () {}, icon: const Icon(Icons.remove), iconSize: 32),
-        ],
       ),
     );
   }
