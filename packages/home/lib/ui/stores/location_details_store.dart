@@ -26,12 +26,16 @@ abstract class _LocationDetailsStore with Store {
   @readonly
   LocationData? _location;
 
+  @readonly
+  bool _isAppBarCollapsed = false;
+
   @computed
   bool get hasLocation => _location != null;
 
-  @computed
-  String get mapUrl =>
-      'https://www.google.com/maps/@${_location?.latitude},${_location?.longitude},15z?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D';
+  @action
+  void setAppBarCollapsed(bool collapsed) {
+    _isAppBarCollapsed = collapsed;
+  }
 
   @action
   Future<void> load({required int id}) async {

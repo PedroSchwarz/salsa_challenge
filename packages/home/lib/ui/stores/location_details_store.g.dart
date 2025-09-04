@@ -18,15 +18,6 @@ mixin _$LocationDetailsStore on _LocationDetailsStore, Store {
             name: '_LocationDetailsStore.hasLocation',
           ))
           .value;
-  Computed<String>? _$mapUrlComputed;
-
-  @override
-  String get mapUrl =>
-      (_$mapUrlComputed ??= Computed<String>(
-            () => super.mapUrl,
-            name: '_LocationDetailsStore.mapUrl',
-          ))
-          .value;
 
   late final _$_isLoadingAtom = Atom(
     name: '_LocationDetailsStore._isLoading',
@@ -88,6 +79,26 @@ mixin _$LocationDetailsStore on _LocationDetailsStore, Store {
     });
   }
 
+  late final _$_isAppBarCollapsedAtom = Atom(
+    name: '_LocationDetailsStore._isAppBarCollapsed',
+    context: context,
+  );
+
+  bool get isAppBarCollapsed {
+    _$_isAppBarCollapsedAtom.reportRead();
+    return super._isAppBarCollapsed;
+  }
+
+  @override
+  bool get _isAppBarCollapsed => isAppBarCollapsed;
+
+  @override
+  set _isAppBarCollapsed(bool value) {
+    _$_isAppBarCollapsedAtom.reportWrite(value, super._isAppBarCollapsed, () {
+      super._isAppBarCollapsed = value;
+    });
+  }
+
   late final _$loadAsyncAction = AsyncAction(
     '_LocationDetailsStore.load',
     context: context,
@@ -108,11 +119,27 @@ mixin _$LocationDetailsStore on _LocationDetailsStore, Store {
     return _$refreshAsyncAction.run(() => super.refresh(id: id));
   }
 
+  late final _$_LocationDetailsStoreActionController = ActionController(
+    name: '_LocationDetailsStore',
+    context: context,
+  );
+
+  @override
+  void setAppBarCollapsed(bool collapsed) {
+    final _$actionInfo = _$_LocationDetailsStoreActionController.startAction(
+      name: '_LocationDetailsStore.setAppBarCollapsed',
+    );
+    try {
+      return super.setAppBarCollapsed(collapsed);
+    } finally {
+      _$_LocationDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
   @override
   String toString() {
     return '''
-hasLocation: ${hasLocation},
-mapUrl: ${mapUrl}
+hasLocation: ${hasLocation}
     ''';
   }
 }

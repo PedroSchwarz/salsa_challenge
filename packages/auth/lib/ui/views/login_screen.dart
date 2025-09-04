@@ -3,6 +3,7 @@ import 'package:core/core.dart' show getIt;
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:gap/gap.dart';
 import 'package:mobx/mobx.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -70,69 +71,92 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              spacing: AppSpacing.md,
-              children: [
-                const Spacer(),
-                Column(
-                  children: [
-                    Text('Salsa Challenge', style: theme.textTheme.titleLarge),
-                    Text(
-                      'Locations',
-                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary, letterSpacing: 1.3),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                TextField(
-                  onChanged: store.setEmail,
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.sm), borderSide: BorderSide.none),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.sm)),
-                    fillColor: theme.colorScheme.surfaceContainer,
-                    filled: true,
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                Observer(
-                  builder: (context) {
-                    return TextField(
-                      onChanged: store.setPassword,
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.sm), borderSide: BorderSide.none),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.sm)),
-                        fillColor: theme.colorScheme.surfaceContainer,
-                        filled: true,
-                        suffixIcon: IconButton(
-                          onPressed: store.toggleShowPassword,
-                          tooltip: store.showPassword ? 'Show password' : 'Hide password',
-                          icon: store.showPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+        body: AppWaveBackground(
+          waveColor: theme.colorScheme.primary,
+          child: Positioned.fill(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const SizedBox.shrink(),
+                            Column(
+                              children: [
+                                Column(
+                                  children: [
+                                    Text('Salsa Challenge', style: theme.textTheme.displaySmall?.copyWith(letterSpacing: 1.8)),
+                                    Text(
+                                      'Locations',
+                                      style: theme.textTheme.displayMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.primary,
+                                        letterSpacing: 1.8,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Gap(AppSpacing.xxxl),
+                                TextField(
+                                  onChanged: store.setEmail,
+                                  controller: emailController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Email',
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.sm), borderSide: BorderSide.none),
+                                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.sm)),
+                                    fillColor: theme.colorScheme.surfaceContainer,
+                                    filled: true,
+                                  ),
+                                  keyboardType: TextInputType.emailAddress,
+                                ),
+                                const Gap(AppSpacing.md),
+                                Observer(
+                                  builder: (context) {
+                                    return TextField(
+                                      onChanged: store.setPassword,
+                                      controller: passwordController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Password',
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.sm), borderSide: BorderSide.none),
+                                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.sm)),
+                                        fillColor: theme.colorScheme.surfaceContainer,
+                                        filled: true,
+                                        suffixIcon: IconButton(
+                                          onPressed: store.toggleShowPassword,
+                                          tooltip: store.showPassword ? 'Hide password' : 'Show password',
+                                          icon: !store.showPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                                        ),
+                                      ),
+                                      obscureText: !store.showPassword,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            const Gap(AppSpacing.xxxl),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Observer(
+                                  builder: (context) {
+                                    return FilledButton(onPressed: store.canSubmit ? store.login : null, child: const Text('Login'));
+                                  },
+                                ),
+                                const TextButton(onPressed: null, child: Text('Create a new Account')),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                      obscureText: store.showPassword,
-                    );
-                  },
-                ),
-                const Spacer(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Observer(
-                      builder: (context) {
-                        return FilledButton(onPressed: store.canSubmit ? store.login : null, child: const Text('Login'));
-                      },
                     ),
-                    const TextButton(onPressed: null, child: Text('Create a new Account')),
-                  ],
-                ),
-              ],
+                  ),
+                );
+              },
             ),
           ),
         ),

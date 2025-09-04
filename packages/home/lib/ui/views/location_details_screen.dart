@@ -20,11 +20,33 @@ class LocationDetailsScreen extends StatefulWidget {
 
 class _LocationDetailsScreenState extends State<LocationDetailsScreen> {
   final store = getIt<LocationDetailsStore>();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     store.load(id: widget.id);
+    _scrollController.addListener(_onScroll);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final isCollapsed = _scrollController.offset > 260;
+
+    if (isCollapsed != store.isAppBarCollapsed) {
+      store.setAppBarCollapsed(isCollapsed);
+    }
+  }
+
+  void _expandAppBar() {
+    store.setAppBarCollapsed(false);
+    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
 
   @override
@@ -79,13 +101,17 @@ class _LocationDetailsScreenState extends State<LocationDetailsScreen> {
           }
 
           return CustomScrollView(
-            physics: const ClampingScrollPhysics(),
+            controller: _scrollController,
+            physics: store.isAppBarCollapsed ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
             slivers: [
               SliverAppBar.large(
                 expandedHeight: 250,
                 pinned: true,
                 stretch: true,
                 title: Text(location.name),
+                actions: [
+                  if (store.isAppBarCollapsed) IconButton.filledTonal(onPressed: _expandAppBar, icon: const Icon(Icons.close), tooltip: 'Close Map'),
+                ],
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(location.name, style: theme.textTheme.titleLarge?.copyWith(letterSpacing: 1.5, color: theme.colorScheme.onPrimary)),
                   centerTitle: false,
@@ -118,7 +144,7 @@ class _LocationDetailsScreenState extends State<LocationDetailsScreen> {
                 ),
               ),
               SliverFillRemaining(
-                hasScrollBody: false,
+                hasScrollBody: true,
                 fillOverscroll: true,
                 child: LocationMapView(latitude: location.latitude, longitude: location.longitude),
               ),
