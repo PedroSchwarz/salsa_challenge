@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home/home.dart';
 import 'package:salsa_challenge/app/ui/navigation.dart';
+import 'package:settings/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splash/splash.dart';
 
@@ -41,14 +42,18 @@ class MainLocator extends BaseServiceLocator {
     getIt.registerSingleton<GoRouter>(createRouter(authRepository: getIt()));
 
     getIt.registerSingleton<SplashRepository>(SplashRepository(authRepository: getIt()));
-    getIt.registerSingleton<SplashStore>(SplashStore(splashRepository: getIt()));
+    getIt.registerFactory<SplashStore>(() => SplashStore(splashRepository: getIt()));
 
-    getIt.registerSingleton<LoginStore>(LoginStore(authRepository: getIt()));
+    getIt.registerFactory<LoginStore>(() => LoginStore(authRepository: getIt()));
 
     getIt.registerSingleton<LocationManager>(getIt<AppDatabase>().managers.locationTable);
     getIt.registerSingleton<HomeLocalDataSource>(HomeLocalDataSourceImpl(locationManager: getIt()));
     getIt.registerSingleton<HomeRepository>(HomeRepository(homeLocalDataSource: getIt()));
-    getIt.registerSingleton<HomeStore>(HomeStore(homeRepository: getIt()));
-    getIt.registerSingleton<LocationDetailsStore>(LocationDetailsStore(homeRepository: getIt()));
+    getIt.registerFactory<HomeStore>(() => HomeStore(homeRepository: getIt()));
+    getIt.registerFactory<LocationDetailsStore>(() => LocationDetailsStore(homeRepository: getIt()));
+
+    getIt.registerSingleton<SettingsLocalDataSource>(SettingsLocalDataSourceImpl(localStorage: getIt()));
+    getIt.registerSingleton<SettingsRepository>(SettingsRepository(settingsLocalDataSource: getIt()));
+    getIt.registerSingleton<SettingsStore>(SettingsStore(settingsRepository: getIt(), authRepository: getIt()));
   }
 }
