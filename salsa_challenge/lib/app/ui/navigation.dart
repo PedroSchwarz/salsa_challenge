@@ -4,6 +4,7 @@ import 'package:auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home/home.dart';
+import 'package:settings/settings.dart';
 import 'package:splash/splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -46,22 +47,40 @@ GoRouter createRouter({required AuthRepository authRepository}) {
       GoRoute(
         path: '/${LoginScreen.routeName}',
         name: LoginScreen.routeName,
-        builder:
-            (context, state) => LoginScreen(
+        pageBuilder: (context, state) {
+          // Fade transition
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: LoginScreen(
               onAuthenticated: () {
                 context.goNamed(HomeScreen.routeName);
               },
             ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          );
+        },
       ),
       GoRoute(
         path: '/${HomeScreen.routeName}',
         name: HomeScreen.routeName,
-        builder:
-            (context, state) => HomeScreen(
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: HomeScreen(
               onLocationSelected: (location) {
                 context.goNamed(LocationDetailsScreen.routeName, pathParameters: {'id': location.id.toString()});
               },
+              onNavigatedToSettings: () {
+                context.goNamed(SettingsScreen.routeName);
+              },
             ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          );
+        },
         routes: [
           GoRoute(
             path: '/${LocationDetailsScreen.routeName}/:id',
@@ -72,6 +91,7 @@ GoRouter createRouter({required AuthRepository authRepository}) {
               return LocationDetailsScreen(id: int.tryParse(id) ?? 0);
             },
           ),
+          GoRoute(path: '/${SettingsScreen.routeName}', name: SettingsScreen.routeName, builder: (context, state) => const SettingsScreen()),
         ],
       ),
     ],
