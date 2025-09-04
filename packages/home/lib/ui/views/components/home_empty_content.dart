@@ -21,7 +21,7 @@ class HomeEmptyContent extends StatelessWidget {
             style: theme.textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
-          IconButton.filled(onPressed: onRefresh, icon: const Icon(Icons.refresh), iconSize: 32),
+          IconButton.filled(onPressed: onRefresh, icon: const Icon(Icons.refresh), iconSize: 32, tooltip: 'Refresh locations list'),
         ],
       ),
     );

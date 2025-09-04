@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
-        actions: [IconButton(onPressed: widget.onNavigatedToSettings, icon: const Icon(Icons.settings))],
+        actions: [IconButton(onPressed: widget.onNavigatedToSettings, icon: const Icon(Icons.settings), tooltip: 'Settings Screen')],
         bottom: PreferredSize(
           preferredSize: const Size(double.infinity, AppSpacing.xs),
           child: Observer(
@@ -110,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   store.toggleFavorite(id: item.id, isFavorite: !item.isFavorite);
                                 },
                                 icon: store.filteredItems[index].isFavorite ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
+                                tooltip: store.filteredItems[index].isFavorite ? 'Remove from favorites' : 'Add to favorites',
                               );
                             },
                           ),

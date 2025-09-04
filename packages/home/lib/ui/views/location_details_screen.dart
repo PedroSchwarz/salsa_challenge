@@ -66,7 +66,12 @@ class _LocationDetailsScreenState extends State<LocationDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('No locations found. Try again later.', style: theme.textTheme.bodyLarge, textAlign: TextAlign.center),
-                    IconButton.filled(onPressed: () => store.refresh(id: widget.id), icon: const Icon(Icons.refresh), iconSize: 32),
+                    IconButton.filled(
+                      onPressed: () => store.refresh(id: widget.id),
+                      icon: const Icon(Icons.refresh),
+                      iconSize: 32,
+                      tooltip: 'Refresh location data',
+                    ),
                   ],
                 ),
               ),
