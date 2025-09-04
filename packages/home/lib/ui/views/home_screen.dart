@@ -10,9 +10,10 @@ import 'package:home/ui/views/components/home_loading_content.dart';
 import 'package:home/ui/views/components/location_item.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({required this.onLocationSelected, super.key});
+  const HomeScreen({required this.onLocationSelected, required this.onNavigatedToSettings, super.key});
 
   final Function(LocationData) onLocationSelected;
+  final Function() onNavigatedToSettings;
 
   static const routeName = 'home';
 
@@ -47,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+        actions: [IconButton(onPressed: widget.onNavigatedToSettings, icon: const Icon(Icons.settings))],
         bottom: PreferredSize(
           preferredSize: const Size(double.infinity, AppSpacing.xs),
           child: Observer(

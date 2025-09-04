@@ -39,6 +39,11 @@ class AuthRepository {
       return LoginResult.networkError;
     }
   }
+
+  Future<void> signOut() async {
+    await credentialsRepository.saveCredentials(null);
+    await userRepository.updateUser(null);
+  }
 }
 
 enum LoginResult { success, userNotFound, networkError }
