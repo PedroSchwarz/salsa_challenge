@@ -4,8 +4,8 @@ A Flutter application built as a challenge project for Salsa Tech, organized as 
 
 ## Prerequisites
 
-- **Dart SDK**: Version 3.7.2 or higher
-- **Flutter SDK**: Version 3.29.2 or higher
+- **Dart SDK**: Version 3.6.0 or higher
+- **Flutter SDK**: Version 3.22.2 or higher
 
 ## Getting Started
 
